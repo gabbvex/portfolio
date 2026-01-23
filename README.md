@@ -5,7 +5,7 @@ Meu nome é Gabrielle e desde 2021 venho estudando e praticando QA com foco em q
 
 Tenho grande interesse por acessibilidade e usabilidade, pois acredito que qualidade vai além de o sistema “funcionar”: ela envolve tornar o ambiente digital mais claro, inclusivo e utilizável para todas as pessoas. Enxergo o papel do QA como essencial nesse processo, atuando como ponte entre o produto, a tecnologia e o usuário final.
 
-[https://www.linkedin.com/in/gabrielleoli/](link)
+[Meu perfil no LinkedIn](https://www.linkedin.com/in/gabrielleoli/)
 
 ## Minha Experiência
 Minha trajetória profissional me permitiu construir uma base sólida na área de tecnologia, com evolução gradual e consistente até a atuação focada em Qualidade de Software.
@@ -17,14 +17,6 @@ Posteriormente, ainda na **Radix Brasil**, passei a atuar como **Desenvolvedora 
 Atualmente, atuo no **PicPay Bank**, empresa do setor financeiro e de tecnologia, como **Engenheira de Testes**. Minha atuação envolve a execução de testes manuais e automatizados, homologação de sistemas junto às áreas de negócio, identificação e reporte de defeitos, além do apoio contínuo na garantia da qualidade dos produtos digitais. Trabalhar em um ambiente de alta responsabilidade e impacto direto no usuário final reforçou minha visão sobre a importância do QA como agente essencial para a confiabilidade, segurança e usabilidade dos sistemas.
 
 Ao longo dessa jornada, evoluí significativamente tanto em habilidades técnicas quanto em soft skills, como pensamento analítico, comunicação clara e visão crítica sobre qualidade. Essa combinação foi decisiva para consolidar minha escolha pela área de QA e para minha constante busca por crescimento profissional.
-
-## Ferramentas
-- Playwright
-- Cypress
-- Postman
-- Git / GitHub
-- Jira / Azure DevOps
-- Testes BDD (Gherkin)
 
 ## Repositórios
 - Casos de teste: [test-cases-examples](link)
@@ -52,12 +44,12 @@ Ao longo dessa jornada, evoluí significativamente tanto em habilidades técnica
   - Uso de ferramentas para testes e validações automatizadas
 
 - **Ferramentas e Tecnologias**
-  - Playwright
-  - Cypress
-  - Postman
-  - Git e GitHub
   - Jira / Azure DevOps
-  - Testes BDD (Gherkin)
+  - [Playwright](https://playwright.dev)
+  - [Cypress](https://www.cypress.io/#create)
+  - [Postman](https://www.postman.com)
+  - Git e GitHub
+  - [Testes BDD (Gherkin)](https://cucumber.io/docs/gherkin/)
 
 - **Qualidade de Software**
   - Identificação e reporte de defeitos
