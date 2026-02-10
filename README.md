@@ -20,7 +20,8 @@ Ao longo dessa jornada, evoluí significativamente tanto em habilidades técnica
 
 ## Repositórios
 - Casos de teste: [test-cases-examples](link)
-- Relatórios de bugs: [bug-reports-examples](link)
+- Plano de testes: [test-plan-examples](link)
+- Relatórios de bugs: [bug-reports-examples]([link](https://github.com/gabbvex/portfolio/blob/main/Planos_de_Testes/Planos_de_Testes_Exemplo.md))
 - Automação Web: [automation-playwright](link)
 - Testes de API: [api-tests](link)
 
