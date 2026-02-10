@@ -19,7 +19,7 @@ Atualmente, atuo no **PicPay Bank**, empresa do setor financeiro e de tecnologia
 Ao longo dessa jornada, evoluí significativamente tanto em habilidades técnicas quanto em soft skills, como pensamento analítico, comunicação clara e visão crítica sobre qualidade. Essa combinação foi decisiva para consolidar minha escolha pela área de QA e para minha constante busca por crescimento profissional.
 
 ## Repositórios
-- Casos de teste: [test-cases-examples]
+- Casos de teste: [test-cases-examples](https://github.com/gabbvex/portfolio/tree/190f08f024d089cee5ef032e765d921cd7526dfc/Casos_de_Testes)
 - Plano de testes: [test-plan-examples](https://github.com/gabbvex/portfolio/blob/00ad08624a3103d1e3781ce1b36338923a3b31d8/Planos_de_Testes/Planos_de_Testes_Exemplo.md)
 - Relatórios de bugs: [bug-reports-examples]
 - Automação Web: [automation-playwright]
