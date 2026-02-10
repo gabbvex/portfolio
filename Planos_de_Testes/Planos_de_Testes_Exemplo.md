@@ -19,29 +19,29 @@ Arquivo: gaSIM-280
 
 ## 📚 Lista de Conteúdo
 
-1. [Objetivos](#1-objetivos) ........................................................... 6
-2. Estratégias de Testes ..................................... 6 
-3. Escopo e Não Escopo ................................... 6  
-4. Critérios de Entrada ....................................... 6  
-5. Critérios de Saída (DoD) .............................. 6  
-6. Sequência do Fluxo (referência) ............... 7   
-7. Ambientes, Acessos e Variáveis ................ 7    
-8. Dados de Teste (Massa) ............................... 7    
-&nbsp;&nbsp;8.1 Fonte de Dados .................................... 10    
-&nbsp;&nbsp;8.2 Variáveis a Armazenar ........................ 10    
-&nbsp;&nbsp;8.3 Políticas de Uso de Dados ................ 10    
-&nbsp;&nbsp;8.4 Template de Registro de Massa de Teste ............ 10   
-9. Contratos Mínimos (Schema Validation) ........................ 8  
-10. Casos de Teste – Formato Cypress (sem Gherkin) ....... 8  
-&nbsp;&nbsp;10.1 Fluxo feliz (E2E) – Aquisição até status final ...... 10  
-&nbsp;&nbsp;10.2 Negativo essencial – Documento inválido / parâmetros ausentes ........ 10  
-&nbsp;&nbsp;10.3 Sanidade de ambiente ............................................... 11  
-11. Matriz de Endpoints do Fluxo .................. 11   
-12. Riscos e Mitigações ...................................... 13  
-13. Métricas e Relatórios ................................... 13  
-14. CI/CD .................................................................. 13  
-15. Checklists Operacionais .............................. 14  
-16. Cronograma (estimativo de referência) ... 14
+1. [Objetivos](#1-objetivos) ........................................................... 5
+2. [Estratégias de Testes](#2-estratégias-de-testes) ..................................... 6 
+3. [Escopo e Não Escopo](#3-escopo-dos-testes)  ................................... 6  
+4. [Critérios de Entrada](#4-critérios-de-entrada) ....................................... 7  
+5. [Critérios de Saída (DoD)](#5-critérios-de-saída-dod) .............................. 7  
+6. [Sequência do Fluxo (referência)](6-sequência-do-fluxo-referência) ............... 7   
+7. [Ambientes, Acessos e Variáveis](#7-ambientes-acessos-e-variáveis) ................ 8    
+8. [Dados de Teste (Massa)](#8-dados-de-teste-massa) ............................... 8    
+&nbsp;&nbsp;[8.1 Fonte de Dados](#81-fonte-de-dados) .................................... 9    
+&nbsp;&nbsp;[8.2 Variáveis a Armazenar](#82-variáveis-a-armazenar) ........................ 9    
+&nbsp;&nbsp;[8.3 Políticas de Uso de Dados](#83-políticas-de-uso-de-dados) ................ 9    
+&nbsp;&nbsp;[8.4 Template de Registro de Massa de Teste](#84-template-de-registro-de-massa-de-teste) ............ 10   
+9. [Contratos Mínimos (Schema Validation)](#9-contratos-mínimos-schema-validation) ........................ 10  
+10. [Casos de Teste (Formato Cypress)](#10-casos-de-teste-formato-cypress) ....... 11  
+&nbsp;&nbsp;[10.1 Fluxo feliz (E2E) – Aquisição até status final](#101-fluxo-feliz-e2e-aquisição-até-status-final) ...... 11  
+&nbsp;&nbsp;[10.2 Negativo essencial – Documento inválido / parâmetros ausentes](#102-negativo-essencial-documento-inválido-parâmetros-ausentes) ........ 12  
+&nbsp;&nbsp;[10.3 Sanidade de ambiente](#103-sanidade-de-ambiente) ............................................... 12  
+11. [Matriz de Endpoints do Fluxo](#11-matriz-de-endpoints-do-fluxo) .................. 13   
+12. [Riscos e Mitigações](#12-riscos-e-mitigações) ...................................... 13  
+13. [Métricas e Relatórios](#13-métricas-e-relatórios) ................................... 14  
+14. [CI/CD](#14-cicd) .................................................................. 14  
+15. [Checklists Operacionais](#15-Checklists-Operacionais) .............................. 15  
+16. [Cronograma (estimativo de referência)](#16-cronograma-estimativo-de-referência) ... 15
 
 ---
 
@@ -164,7 +164,7 @@ Fora de escopo inicial
 
 ---
 
-###  10. Casos de Teste – Formato Cypress (sem Gherkin)
+###  10. Casos de Teste – Formato Cypress
 Os casos de teste a seguir são descritos no formato **Cypress puro**, utilizando `describe`, `it` e `expect`, sem uso de Gherkin/BDD, priorizando clareza técnica, rastreabilidade e fácil manutenção.
 
 ### 10.1 Fluxo feliz (E2E) – Aquisição até status final
