@@ -5,7 +5,7 @@ Este repositório reúne **casos de teste manuais e automatizados**, criados com
 ---
 
 ## 📁 Seções
-- Aplicações Web - Testes de interface, API e desempenho
+- [Aplicações Web](https://github.com/gabbvex/portfolio/tree/4c489d771f64e93cc2d0c3dcb504ccbde73feaa5/Casos_de_Testes/Web) - Testes de interface, API e desempenho
 - APIs e Microsserviços - Contratos e integrações
 - Funcionais - Validação de requisitos de negócio
 - Segurança - Vetores de proteção e vulnerabilidades
