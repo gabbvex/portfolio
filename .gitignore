@@ -1,0 +1,8 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Mas manter o example
+!.env.example
