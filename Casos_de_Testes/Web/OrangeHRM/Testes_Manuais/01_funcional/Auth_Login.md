@@ -1,51 +1,112 @@
 # 🔐 CT-LOGIN-FUNC-001 - Validar login com credenciais válidas
 
-**Título:** Login de administrador com acesso ao dashboard  
+**Título:** Autenticação bem-sucedida de administrador com redirecionamento ao Dashboard
 **Seção:** Auth_Login  
 **Template:** Passos + Resultados  
-**Tipo:** Funcional / Controle de Acesso  
+**Tipo:** Funcional / Autenticação
 **Prioridade:** Alta  
 **Status:** Aprovado  
-**Status de Execução:** Aprovado  
-**Automação:** Planejado  
-**Responsável:** Gabrielle de Oliveira Bezerra  
-**Estimativa:** 2 min  
+**Automação:** Implementado  
+**Responsável:** Gabrielle de Oliveira Bezerra
 
 ---
 
 ## 📌 Pré-condições
-- Aplicação disponível
-- Credenciais válidas de administrador
-- Usuário não autenticado
+- Aplicação acessível (OrangeHRM Demo)
+- Usuário não autenticado (cookies limpos)
+- Credenciais válidas disponíveis:
+- Usuário: Admin
+- Senha: admin123
 
 ---
 
 ## 🧪 Passos do Teste
 
-| Passo | Ação | Resultado Esperado | Resultado Obtido |
-|------:|------|--------------------|------------------|
-| 1 | Acessar a página de login | Tela de login exibida corretamente | ✅ Passou |
-| 2 | Informar usuário `Admin` | Campo preenchido sem erros | ✅ Passou |
-| 3 | Informar senha `admin123` | Campo preenchido com senha mascarada | ✅ Passou |
-| 4 | Clicar no botão **Login** | Usuário autenticado com sucesso | ✅ Passou |
-| 5 | Redirecionamento automático | Dashboard exibido | ✅ Passou |
-| 6 | Verificar menu lateral | Opções administrativas visíveis | ✅ Passou |
+| Passo | Ação | Resultado Esperado | Resultado Obtido | Observações |
+|------:|------|--------------------|------------------|-------------|
+| 1 | Acessar a página de login | Tela de login carregada com campos visíveis | ✅ PASSOU | |
+| 2 | Informar usuário válido | Campo preenchido sem erro de validação | ✅ PASSOU | |
+| 3 | Informar senha válida | Campo preenchido com máscara ativa | ✅ PASSOU | |
+| 4 | Acionar o botão **Login** | Processo de autenticação iniciado | ✅ PASSOU | |
+| 5 | Validar redirecionamento | URL contém /dashboard | ✅ PASSOU | |
+| 6 | Validar sessão autenticada | Interface do dashboard visível | ✅ PASSOU | |
 
 ---
 
 ## 📎 Pós-condições
-- Sessão do usuário administrador ativa
-- Dashboard acessível
-- Permissões administrativas habilitadas
+- Sessão ativa para usuário administrador
+- Dashboard carregado
+- Acesso às funcionalidades administrativas disponível
+
+---
+
+## 🔎 Evidência Automatizada
+Validações implementadas via Playwright:
+- Verificação de redirecionamento para /dashboard
+- Confirmação de estado autenticado (isLoggedIn())
+- Execução com limpeza prévia de sessão (clearCookies())
 
 ---
 
 ## ✅ Resultado Esperado Geral
-O usuário com perfil de administrador consegue realizar login com sucesso e acessar o dashboard, visualizando todos os controles e funcionalidades administrativas disponíveis.
+O sistema deve permitir que um usuário administrador autenticado com credenciais válidas:
+- Seja autenticado com sucesso
+- Seja redirecionado automaticamente para o dashboard
+- Tenha acesso às funcionalidades administrativas disponíveis
 
 ---
 
-# 🔁 CT-LOGIN-FUNC-002 – Validar redirecionamento após login
+# ⚠ CT-LOGIN-FUNC-002 – Login com Campos Obrigatórios em Branco
+
+**Título:** Validação de obrigatoriedade de campos
+**Seção:** Auth_Login
+**Template:** Passos + Resultados  
+**Tipo:** Funcional / Validação
+**Prioridade:** Média
+**Status:** Aprovado   
+**Automação:** Implementado  
+**Responsável:** Gabrielle de Oliveira Bezerra  
+
+---
+
+## 📌 Pré-condições
+- Aplicação acessível
+- Usuário não autenticado (cookies limpos)
+- Tela de login carregada
+
+---
+
+## 🧪 Passos do Teste
+
+| Passo | Ação | Resultado Esperado | Resultado Obtido | Observações |
+|------:|------|--------------------|------------------|-------------|
+| 1 | Submeter formulário sem preencher campos | Validação acionada | ✅ PASSOU | |
+| 2 | Validar mensagens obrigatórias | Mensagens de erro exibidas | ✅ PASSOU | |
+
+---
+
+## 📎 Pós-condições
+- Usuário permanece na tela de login
+- Sistema pronto para nova tentativa
+
+---
+
+## 🔎 Evidência Automatizada
+Validações implementadas via Playwright:
+- "page.context().clearCookies()" (garante sessão limpa)
+- "loginPage.goto()"
+- "loginPage.login('', '')" (submissão sem preencher)
+- "loginPage.hasRequiredFieldErrors()" (confirma mensagens “Required”)
+- "expect(requiredErrorsVisible).toBeTruthy()" (assert da validação)
+
+---
+
+## ✅ Resultado Esperado Geral
+O sistema deve impedir autenticação quando campos obrigatórios estiverem vazios e exibir mensagens de validação.
+
+---
+
+# 🔁 CT-LOGIN-FUNC-003 – Validar redirecionamento após login
 
 **Título:** Redirecionamento correto após autenticação  
 **Seção:** Auth_Post_Login_Redirect  
