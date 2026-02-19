@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 
 export default defineConfig({
-  testDir: './Casos_de_Testes/Web/OrangeHRM/Testes_Automatizados',
+  testDir: '..',
   outputDir: 'test-results/',
   
    timeout: parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000'),
@@ -23,8 +23,9 @@ export default defineConfig({
       open: 'never' 
     }],
     ['json', { outputFile: 'reports/json-report/results.json' }],
-    ['list']
-  ],
+    ['list'],
+    ['../reporter/VeggieReporter.ts'],
+  ] as import('@playwright/test').ReporterDescription[],
   
   use: {
     baseURL: process.env.BASE_URL || 'https://opensource-demo.orangehrmlive.com',
@@ -35,7 +36,7 @@ export default defineConfig({
     
     screenshot: process.env.SCREENSHOT_ON_FAILURE ? 'only-on-failure' : 'off',
 
-    headless: process.env.HEADLESS === 'true'
+    headless: process.env.HEADLESS === 'false'
   },
   
   projects: [
