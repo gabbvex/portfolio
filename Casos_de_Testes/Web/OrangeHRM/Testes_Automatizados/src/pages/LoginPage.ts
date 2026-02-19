@@ -2,21 +2,28 @@ import { Page, Locator } from '@playwright/test';
 import { testData } from '../data/test-data';
 
 export class LoginPage {
+
+  // ==========================================================
+  // 1. PROPRIEDADES BÁSICAS
+  // ==========================================================
+
   readonly page: Page;
 
-  // Elementos principais
+  private readonly URL =
+    'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login';
+
+  // ==========================================================
+  // 2. LOCATORS
+  // ==========================================================
+
   readonly usernameInput: Locator;
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
   readonly logo: Locator;
 
-  // Mensagens
   readonly credentialErrorMessage: Locator;
   readonly requiredUsernameMessage: Locator;
   readonly requiredPasswordMessage: Locator;
-
-  private readonly url =
-    'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login';
 
   constructor(page: Page) {
     this.page = page;
@@ -31,23 +38,48 @@ export class LoginPage {
     this.requiredPasswordMessage = page.getByText('Required').nth(1);
   }
 
-  // =========================
-  // Navegação
-  // =========================
+  // ==========================================================
+  // 3. NAVEGAÇÃO
+  // ==========================================================
 
-  async goto() {
-    await this.page.goto(this.url);
-    await this.usernameInput.waitFor({ state: 'visible', timeout: 10000 });
+  async goto(options?: {
+    waitUntil?: 'load' | 'domcontentloaded' | 'networkidle';
+    waitForUI?: boolean;
+  }) {
+
+    await this.page.goto(this.URL, {
+      waitUntil: options?.waitUntil ?? 'load'
+    });
+
+    if (options?.waitForUI) {
+      await this.expectCoreUIVisible();
+    }
   }
 
-  // =========================
-  // Ações
-  // =========================
+  async isOnLoginPage(): Promise<boolean> {
+    return this.page.url().includes('/auth/login');
+  }
+
+  // ==========================================================
+  // 4. AÇÕES
+  // ==========================================================
+
+  async fillUsername(username: string) {
+    await this.usernameInput.fill(username);
+  }
+
+  async fillPassword(password: string) {
+    await this.passwordInput.fill(password);
+  }
+
+  async submitLogin() {
+    await this.loginButton.click();
+  }
 
   async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
+    await this.fillUsername(username);
+    await this.fillPassword(password);
+    await this.submitLogin();
   }
 
   async loginWithValidCredentials() {
@@ -68,102 +100,38 @@ export class LoginPage {
     await this.login('', '');
   }
 
-// =========================
-// Ações reutilizáveis
-// =========================
+  // ==========================================================
+  // 5. ASSERTIONS / EXPECT HELPERS
+  // ==========================================================
 
-async fillUsername(username: string) {
-  await this.usernameInput.fill(username);
-}
-
-async fillPassword(password: string) {
-  await this.passwordInput.fill(password);
-}
-
-async submitLogin() {
-  await this.loginButton.click();
-}
-
-async loginWithCredentials(username: string, password: string) {
-  await this.fillUsername(username);
-  await this.fillPassword(password);
-  await this.submitLogin();
-}
-
-async isOnLoginPage(): Promise<boolean> {
-  return this.page.url().includes('/auth/login');
-}
-
-
-  // =========================
-  // Validações reutilizáveis
-  // =========================
-
-  async isCoreElementsVisible(): Promise<boolean> {
-    const usernameVisible = await this.usernameInput.isVisible();
-    const passwordVisible = await this.passwordInput.isVisible();
-    const buttonVisible = await this.loginButton.isVisible();
-
-    return usernameVisible && passwordVisible && buttonVisible;
+  async expectCoreUIVisible(timeout = 10000) {
+    await this.usernameInput.waitFor({ state: 'visible', timeout });
+    await this.passwordInput.waitFor({ state: 'visible', timeout });
+    await this.loginButton.waitFor({ state: 'visible', timeout });
   }
 
-  async getUITexts() {
-    const usernamePlaceholder =
-      (await this.usernameInput.getAttribute('placeholder')) ?? '';
-
-    const passwordPlaceholder =
-      (await this.passwordInput.getAttribute('placeholder')) ?? '';
-
-    const loginButtonText =
-      (await this.loginButton.textContent())?.trim() ?? '';
-
-    return {
-      usernamePlaceholder: usernamePlaceholder.trim(),
-      passwordPlaceholder: passwordPlaceholder.trim(),
-      loginButtonText: loginButtonText.trim(),
-    };
+  async expectPageLoaded(timeout = 10000) {
+    await this.expectCoreUIVisible(timeout);
+    await this.logo.waitFor({ state: 'visible', timeout });
   }
 
-  async isEnglishUI(): Promise<boolean> {
-    const { usernamePlaceholder, passwordPlaceholder, loginButtonText } =
-      await this.getUITexts();
-
-    const U = usernamePlaceholder.toLowerCase();
-    const P = passwordPlaceholder.toLowerCase();
-    const B = loginButtonText.toLowerCase();
-
-    return (
-      U.includes('username') &&
-      P.includes('password') &&
-      B.includes('login')
-    );
+  async expectLogoVisible(timeout = 10000) {
+    await this.logo.waitFor({ state: 'visible', timeout });
   }
 
-  async getHtmlContent(): Promise<string> {
-    return await this.page.content();
+  async expectPasswordMasked(): Promise<boolean> {
+    const type = await this.passwordInput.getAttribute('type');
+    return type === 'password';
   }
 
-  async hasNoScriptTag(): Promise<boolean> {
-    const html = await this.getHtmlContent();
-    return html.includes('<noscript');
-  }
-
-  async getPasswordInputType(): Promise<string | null> {
-    return await this.passwordInput.getAttribute('type');
-  }
-
-  async waitForErrorMessage(timeout: number = 10000) {
+  async waitForErrorMessage(timeout = 10000) {
     await this.credentialErrorMessage.waitFor({
       state: 'visible',
       timeout
     });
   }
 
-  async getErrorMessageText(): Promise<string> {
-    return (await this.credentialErrorMessage.textContent()) ?? '';
-  }
-
-  async hasRequiredFieldErrors(timeout: number = 10000): Promise<boolean> {
+  async hasRequiredFieldErrors(timeout = 10000): Promise<boolean> {
     try {
       await this.requiredUsernameMessage.waitFor({ state: 'visible', timeout });
       await this.requiredPasswordMessage.waitFor({ state: 'visible', timeout });
@@ -171,5 +139,98 @@ async isOnLoginPage(): Promise<boolean> {
     } catch {
       return false;
     }
+  }
+
+  // ==========================================================
+  // 6. I18N / UI TEXT VALIDATIONS
+  // ==========================================================
+
+  async getUITexts() {
+    const username =
+      (await this.usernameInput.getAttribute('placeholder'))?.trim() ?? '';
+
+    const password =
+      (await this.passwordInput.getAttribute('placeholder'))?.trim() ?? '';
+
+    const button =
+      (await this.loginButton.textContent())?.trim() ?? '';
+
+    return { username, password, button };
+  }
+
+  async isEnglishUI(): Promise<boolean> {
+    const { username, password, button } = await this.getUITexts();
+
+    return (
+      username.toLowerCase().includes('username') &&
+      password.toLowerCase().includes('password') &&
+      button.toLowerCase().includes('login')
+    );
+  }
+
+  async hasVisualTranslation(): Promise<boolean> {
+    return !(await this.isEnglishUI());
+  }
+
+  // ==========================================================
+  // 7. ESTRUTURA / JAVASCRIPT / HTML VALIDATION
+  // ==========================================================
+
+  async getHtml(): Promise<string> {
+    return await this.page.content();
+  }
+
+  async hasBasicHtmlStructure(): Promise<boolean> {
+    const html = await this.getHtml();
+    return html.includes('<html') && html.includes('<body');
+  }
+
+  async hasNoScriptFallback(): Promise<boolean> {
+    const html = await this.getHtml();
+    return html.includes('<noscript');
+  }
+
+  async mentionsJavaScript(): Promise<boolean> {
+    const html = await this.getHtml();
+    return html.toLowerCase().includes('javascript');
+  }
+
+  async getStructuralValidation() {
+    const html = await this.getHtml();
+
+    return {
+      hasHtml: html.includes('<html'),
+      hasHead: html.includes('<head'),
+      hasBody: html.includes('<body'),
+      hasForm: html.includes('<form'),
+      hasInput: html.includes('input'),
+      hasNoScript: html.includes('<noscript')
+    };
+  }
+
+  // ==========================================================
+  // 8. UTILITÁRIOS
+  // ==========================================================
+
+  async getErrorMessageText(): Promise<string> {
+    return (await this.credentialErrorMessage.textContent()) ?? '';
+  }
+
+  async getPasswordValue(): Promise<string> {
+    return await this.passwordInput.inputValue();
+  }
+
+  async hasConsoleErrors(): Promise<boolean> {
+    const errors: string[] = [];
+
+    this.page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        errors.push(msg.text());
+      }
+    });
+
+    await this.page.waitForLoadState('networkidle');
+
+    return errors.length > 0;
   }
 }

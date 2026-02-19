@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 
 export default defineConfig({
-  testDir: './src/tests',
+  testDir: './Casos_de_Testes/Web/OrangeHRM/Testes_Automatizados',
   outputDir: 'test-results/',
   
    timeout: parseInt(process.env.PLAYWRIGHT_TIMEOUT || '30000'),
