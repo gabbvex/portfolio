@@ -1,68 +1,73 @@
-import { Page, Locator } from '@playwright/test';
-import { testData } from '../data/test-data';
+import { Page, Locator, expect } from "@playwright/test";
+import { testData } from "../data/test-data";
 
+/**
+ * Page Object para a tela de Login.
+ *
+ * Responsabilidades:
+ *  - Navegar para a pagina de login
+ *  - Preencher e submeter o formulario
+ *  - Verificar mensagens de erro
+ *  - Assertions de estado da pagina
+ */
 export class LoginPage {
 
-  // ==========================================================
-  // 1. PROPRIEDADES BÁSICAS
-  // ==========================================================
-
+  // --- Propriedades ---
   readonly page: Page;
+  private readonly PATH = testData.paths.login;
 
-  private readonly URL =
-    'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login';
-
-  // ==========================================================
-  // 2. LOCATORS
-  // ==========================================================
-
+  // --- Locators: Formulario ---
   readonly usernameInput: Locator;
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
   readonly logo: Locator;
 
-  readonly credentialErrorMessage: Locator;
-  readonly requiredUsernameMessage: Locator;
-  readonly requiredPasswordMessage: Locator;
+  // --- Locators: Mensagens de Erro ---
+
+  /** Alerta de credenciais invalidas (ex: "Invalid credentials") */
+  readonly invalidCredentialsAlert: Locator;
+
+  /**
+   * Mensagens de campo obrigatorio.
+   * Usa a classe CSS do componente de erro, nao depende de posicao.
+   */
+  readonly requiredFieldErrors: Locator;
+
+  // --- Monitoramento de Console ---
+  private readonly consoleErrors: string[] = [];
+
+  // --- Constructor ---
 
   constructor(page: Page) {
     this.page = page;
 
+    // Formulario
     this.usernameInput = page.locator('input[name="username"]');
     this.passwordInput = page.locator('input[name="password"]');
-    this.loginButton = page.locator('button[type="submit"]');
-    this.logo = page.locator('img[alt="company-branding"]');
+    this.loginButton   = page.locator('button[type="submit"]');
+    this.logo          = page.locator('img[alt="company-branding"]');
 
-    this.credentialErrorMessage = page.locator('.oxd-alert-content-text');
-    this.requiredUsernameMessage = page.getByText('Required').first();
-    this.requiredPasswordMessage = page.getByText('Required').nth(1);
-  }
+    // Mensagens de erro
+    this.invalidCredentialsAlert = page.locator(".oxd-alert-content-text");
+    this.requiredFieldErrors     = page.locator(".oxd-input-field-error-message");
 
-  // ==========================================================
-  // 3. NAVEGAÇÃO
-  // ==========================================================
-
-  async goto(options?: {
-    waitUntil?: 'load' | 'domcontentloaded' | 'networkidle';
-    waitForUI?: boolean;
-  }) {
-
-    await this.page.goto(this.URL, {
-      waitUntil: options?.waitUntil ?? 'load'
+    // Captura erros do console DESDE O INICIO
+    this.page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        this.consoleErrors.push(msg.text());
+      }
     });
-
-    if (options?.waitForUI) {
-      await this.expectCoreUIVisible();
-    }
   }
 
-  async isOnLoginPage(): Promise<boolean> {
-    return this.page.url().includes('/auth/login');
+  // --- Navegacao ---
+
+  /** Navega para a pagina de login. Usa baseURL do Playwright config. */
+  async goto() {
+    await this.page.goto(this.PATH);
+    await this.usernameInput.waitFor({ state: "visible" });
   }
 
-  // ==========================================================
-  // 4. AÇÕES
-  // ==========================================================
+  // --- Acoes ---
 
   async fillUsername(username: string) {
     await this.usernameInput.fill(username);
@@ -76,6 +81,7 @@ export class LoginPage {
     await this.loginButton.click();
   }
 
+  /** Preenche e submete o formulario de login. */
   async login(username: string, password: string) {
     await this.fillUsername(username);
     await this.fillPassword(password);
@@ -85,152 +91,79 @@ export class LoginPage {
   async loginWithValidCredentials() {
     await this.login(
       testData.validCredentials.username,
-      testData.validCredentials.password
+      testData.validCredentials.password,
     );
   }
 
   async loginWithInvalidCredentials() {
     await this.login(
       testData.invalidCredentials.username,
-      testData.invalidCredentials.password
+      testData.invalidCredentials.password,
     );
   }
 
+  /** Submete o formulario sem preencher nada. */
   async loginWithEmptyFields() {
-    await this.login('', '');
+    await this.submitLogin();
   }
 
-  // ==========================================================
-  // 5. ASSERTIONS / EXPECT HELPERS
-  // ==========================================================
+  // --- Assertions ---
+  // Usam expect() do Playwright = retry automatico + mensagens claras.
 
-  async expectCoreUIVisible(timeout = 10000) {
-    await this.usernameInput.waitFor({ state: 'visible', timeout });
-    await this.passwordInput.waitFor({ state: 'visible', timeout });
-    await this.loginButton.waitFor({ state: 'visible', timeout });
+  /** Verifica que a URL atual eh a de login. */
+  async assertIsOnLoginPage() {
+    await expect(this.page).toHaveURL(testData.urlPatterns.login);
   }
 
-  async expectPageLoaded(timeout = 10000) {
-    await this.expectCoreUIVisible(timeout);
-    await this.logo.waitFor({ state: 'visible', timeout });
+  /** Verifica que os elementos principais do formulario estao visiveis. */
+  async assertFormIsVisible() {
+    await expect(this.usernameInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.loginButton).toBeVisible();
   }
 
-  async expectLogoVisible(timeout = 10000) {
-    await this.logo.waitFor({ state: 'visible', timeout });
+  /** Verifica que o campo de senha tem type="password" (mascarado). */
+  async assertPasswordIsMasked() {
+    await expect(this.passwordInput).toHaveAttribute("type", "password");
   }
 
-  async expectPasswordMasked(): Promise<boolean> {
-    const type = await this.passwordInput.getAttribute('type');
-    return type === 'password';
+  /** Verifica que o alerta de credenciais invalidas esta visivel. */
+  async assertInvalidCredentialsVisible() {
+    await expect(this.invalidCredentialsAlert).toBeVisible();
   }
 
-  async waitForErrorMessage(timeout = 10000) {
-    await this.credentialErrorMessage.waitFor({
-      state: 'visible',
-      timeout
-    });
+  /**
+   * Verifica as mensagens de campo obrigatorio.
+   * @param expectedCount - Quantos erros esperar (padrao: 2, username + password)
+   */
+  async assertRequiredFieldErrors(expectedCount = 2) {
+    await expect(this.requiredFieldErrors).toHaveCount(expectedCount);
   }
 
-  async hasRequiredFieldErrors(timeout = 10000): Promise<boolean> {
-    try {
-      await this.requiredUsernameMessage.waitFor({ state: 'visible', timeout });
-      await this.requiredPasswordMessage.waitFor({ state: 'visible', timeout });
-      return true;
-    } catch {
-      return false;
-    }
+  /** Verifica que o logo esta visivel. */
+  async assertLogoVisible() {
+    await expect(this.logo).toBeVisible();
   }
 
-  // ==========================================================
-  // 6. I18N / UI TEXT VALIDATIONS
-  // ==========================================================
+  // --- Getters (para quando o teste precisa do valor) ---
 
-  async getUITexts() {
-    const username =
-      (await this.usernameInput.getAttribute('placeholder'))?.trim() ?? '';
-
-    const password =
-      (await this.passwordInput.getAttribute('placeholder'))?.trim() ?? '';
-
-    const button =
-      (await this.loginButton.textContent())?.trim() ?? '';
-
-    return { username, password, button };
-  }
-
-  async isEnglishUI(): Promise<boolean> {
-    const { username, password, button } = await this.getUITexts();
-
-    return (
-      username.toLowerCase().includes('username') &&
-      password.toLowerCase().includes('password') &&
-      button.toLowerCase().includes('login')
-    );
-  }
-
-  async hasVisualTranslation(): Promise<boolean> {
-    return !(await this.isEnglishUI());
-  }
-
-  // ==========================================================
-  // 7. ESTRUTURA / JAVASCRIPT / HTML VALIDATION
-  // ==========================================================
-
-  async getHtml(): Promise<string> {
-    return await this.page.content();
-  }
-
-  async hasBasicHtmlStructure(): Promise<boolean> {
-    const html = await this.getHtml();
-    return html.includes('<html') && html.includes('<body');
-  }
-
-  async hasNoScriptFallback(): Promise<boolean> {
-    const html = await this.getHtml();
-    return html.includes('<noscript');
-  }
-
-  async mentionsJavaScript(): Promise<boolean> {
-    const html = await this.getHtml();
-    return html.toLowerCase().includes('javascript');
-  }
-
-  async getStructuralValidation() {
-    const html = await this.getHtml();
-
-    return {
-      hasHtml: html.includes('<html'),
-      hasHead: html.includes('<head'),
-      hasBody: html.includes('<body'),
-      hasForm: html.includes('<form'),
-      hasInput: html.includes('input'),
-      hasNoScript: html.includes('<noscript')
-    };
-  }
-
-  // ==========================================================
-  // 8. UTILITÁRIOS
-  // ==========================================================
-
+  /** Retorna o texto da mensagem de erro de credenciais. */
   async getErrorMessageText(): Promise<string> {
-    return (await this.credentialErrorMessage.textContent()) ?? '';
+    return (await this.invalidCredentialsAlert.textContent()) ?? "";
   }
 
+  /** Retorna todos os textos das mensagens de campo obrigatorio. */
+  async getRequiredFieldErrorMessages(): Promise<string[]> {
+    return this.requiredFieldErrors.allTextContents();
+  }
+
+  /** Retorna os erros de console capturados desde a criacao da pagina. */
+  getConsoleErrors(): string[] {
+    return [...this.consoleErrors];
+  }
+
+  /** Retorna o valor atual do campo de senha. */
   async getPasswordValue(): Promise<string> {
-    return await this.passwordInput.inputValue();
-  }
-
-  async hasConsoleErrors(): Promise<boolean> {
-    const errors: string[] = [];
-
-    this.page.on('console', (msg) => {
-      if (msg.type() === 'error') {
-        errors.push(msg.text());
-      }
-    });
-
-    await this.page.waitForLoadState('networkidle');
-
-    return errors.length > 0;
+    return this.passwordInput.inputValue();
   }
 }

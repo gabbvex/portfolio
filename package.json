@@ -8,6 +8,7 @@
     "test:ui": "npx playwright test --grep @ui",
     "test:headed": "npx playwright test --headed",
     "test:debug": "npx playwright test --debug",
+    "test:orangehrm": "npx playwright test --config=Casos_de_Testes/Web/OrangeHRM/Testes_Automatizados/config/playwright.config.ts",
     "report": "npx playwright show-report",
     "codegen": "npx playwright codegen"
   },
