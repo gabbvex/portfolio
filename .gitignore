@@ -30,6 +30,7 @@ allure-report/
 coverage/
 .nyc_output/
 cucumber-report*/
+**/config/reports/
 
 # Logs
 *.log
